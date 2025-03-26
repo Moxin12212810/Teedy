@@ -9,6 +9,7 @@
   <version>1.12-SNAPSHOT</version>
 
   <name>Docs Parent</name>
+  <url>file://${project.basedir}</url>
 
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
@@ -116,8 +117,29 @@
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${org.eclipse.jetty.jetty-maven-plugin.version}</version>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>4.0.0-M9</version> 
+        <configuration>
+          <reportPlugins>
+            <reportPlugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+            </reportPlugin>
+          </reportPlugins>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+  <site>
+    <id>local</id>
+    <url>file://${project.build.directory}/staging</url>
+  </site>
+</distributionManagement>
 
   <modules>
     <module>docs-core</module>
