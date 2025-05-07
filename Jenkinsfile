@@ -4,9 +4,9 @@ pipeline {
     environment {
         // Define environment variables
         // Jenkins credentials configuration
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub_credentials') // Docker Hub credentials ID stored in Jenkins
+        DOCKER_HUB_CREDENTIALS = credentials('1') // Docker Hub credentials ID stored in Jenkins
         // Docker Hub repository name
-        DOCKER_IMAGE = 'xx/teedy-app' // Your Docker Hub username and repository name
+        DOCKER_IMAGE = 'mox413/teedy-app' // Your Docker Hub username and repository name
         DOCKER_TAG = "${env.BUILD_NUMBER}" // Use build number as tag
     }
 
@@ -14,9 +14,9 @@ pipeline {
         stage('Build') {
             steps {
                 checkout scmGit(
-                    branches: [[name: '*/master']],
+                    branches: [[name: '*/b-12212810']],
                     extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/xx/Teedy.git']] // Your GitHub repository
+                    userRemoteConfigs: [[url: 'https://github.com/Moxin12212810/Teedy.git']] // Your GitHub repository
                 )
                 sh 'mvn -B -DskipTests clean package'
             }
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     // Sign in to Docker Hub
-                    docker.withRegistry('https://registry.hub.docker.com', 'DOCKER_HUB_CREDENTIALS') {
+                    docker.withRegistry('https://registry.hub.docker.com', '1') {
                         // Push image
                         docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
                         // Optional: also tag as latest
