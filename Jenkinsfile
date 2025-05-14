@@ -24,7 +24,8 @@ pipeline {
                     echo "Setting image for deployment..."
                     docker pull ${IMAGE_NAME}
                     minikube image load ${IMAGE_NAME}
-                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_NAME}
+                    kubectl delete deployment ${DEPLOYMENT_NAME}
+                    kubectl create deployment ${DEPLOYMENT_NAME} --image=${IMAGE_NAME}
                 '''
             }
         }
