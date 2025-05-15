@@ -52,6 +52,195 @@ import java.util.Set;
 @Path("/user")
 public class UserResource extends BaseResource {
     /**
+     * Creates a new registration request.
+     *
+     * @api {post} /user/register Register a new user
+     * @apiName PostUserRegister
+     * @apiGroup User
+     * @apiParam {String{3..50}} username Username
+     * @apiParam {String{8..50}} password Password
+     * @apiParam {String{1..100}} email E-mail
+     * @apiSuccess {String} status Status OK
+     * @apiError (client) ValidationError Validation error
+     * @apiError (client) AlreadyExistingUsername Login already used
+     * @apiError (client) AlreadyExistingEmail Email already used
+     * @apiError (client) AlreadyExistingRequest Request already pending
+     * @apiPermission none
+     * @apiVersion 1.5.0
+     *
+     * @param username User's username
+     * @param password Password
+     * @param email E-Mail
+     * @return Response
+     */
+    @POST
+    @Path("register")
+    public Response register(
+        @FormParam("username") String username,
+        @FormParam("password") String password,
+        @FormParam("email") String email) {
+        
+        // Validate the input data
+        username = ValidationUtil.validateLength(username, "username", 3, 50);
+        ValidationUtil.validateUsername(username, "username");
+        password = ValidationUtil.validateLength(password, "password", 8, 50);
+        email = ValidationUtil.validateLength(email, "email", 1, 100);
+        ValidationUtil.validateEmail(email, "email");
+        
+        // Create the registration request
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername(username);
+        request.setPassword(password);
+        request.setEmail(email);
+
+        // Create the request
+        RegistrationRequestDao requestDao = new RegistrationRequestDao();
+        try {
+            requestDao.create(request);
+        } catch (Exception e) {
+            if ("AlreadyExistingUsername".equals(e.getMessage())) {
+                throw new ClientException("AlreadyExistingUsername", "Login already used", e);
+            } else if ("AlreadyExistingEmail".equals(e.getMessage())) {
+                throw new ClientException("AlreadyExistingEmail", "Email already used", e);
+            } else if ("AlreadyExistingRequest".equals(e.getMessage())) {
+                throw new ClientException("AlreadyExistingRequest", "Registration request already pending", e);
+            } else {
+                throw new ServerException("UnknownError", "Unknown server error", e);
+            }
+        }
+        
+        // Always return OK
+        JsonObjectBuilder response = Json.createObjectBuilder()
+                .add("status", "ok");
+        return Response.ok().entity(response.build()).build();
+    }
+
+    /**
+     * Lists all pending registration requests.
+     *
+     * @api {get} /user/registration_requests List registration requests
+     * @apiName GetRegistrationRequests
+     * @apiGroup User
+     * @apiSuccess {Object[]} requests List of registration requests
+     * @apiSuccess {String} requests.id Request ID
+     * @apiSuccess {String} requests.username Username
+     * @apiSuccess {String} requests.email Email
+     * @apiSuccess {String} requests.create_date Creation date
+     * @apiError (client) ForbiddenError Access denied
+     * @apiPermission admin
+     * @apiVersion 1.5.0
+     *
+     * @return Response
+     */
+    @GET
+    @Path("registration_requests")
+    public Response listRegistrationRequests() {
+        if (!authenticate()) {
+            throw new ForbiddenClientException();
+        }
+        checkBaseFunction(BaseFunction.ADMIN);
+        
+        // Get all pending requests
+        RegistrationRequestDao requestDao = new RegistrationRequestDao();
+        List<RegistrationRequest> requests = requestDao.getPendingRequests();
+        
+        // Build the response
+        JsonArrayBuilder requestsArray = Json.createArrayBuilder();
+        for (RegistrationRequest request : requests) {
+            requestsArray.add(Json.createObjectBuilder()
+                    .add("id", request.getId())
+                    .add("username", request.getUsername())
+                    .add("email", request.getEmail())
+                    .add("create_date", request.getCreateDate().getTime()));
+        }
+        
+        JsonObjectBuilder response = Json.createObjectBuilder()
+                .add("requests", requestsArray);
+        return Response.ok().entity(response.build()).build();
+    }
+
+    /**
+     * Processes a registration request.
+     *
+     * @api {post} /user/registration_requests/:id Process registration request
+     * @apiName PostRegistrationRequest
+     * @apiGroup User
+     * @apiParam {String} action Action to perform (approve/reject)
+     * @apiParam {String} comment Comment
+     * @apiSuccess {String} status Status OK
+     * @apiError (client) ForbiddenError Access denied
+     * @apiError (client) ValidationError Validation error
+     * @apiPermission admin
+     * @apiVersion 1.5.0
+     *
+     * @param id Request ID
+     * @param action Action to perform
+     * @param comment Comment
+     * @return Response
+     */
+    @POST
+    @Path("registration_requests/{id}")
+    public Response processRegistrationRequest(
+        @PathParam("id") String id,
+        @FormParam("action") String action,
+        @FormParam("comment") String comment) {
+        if (!authenticate()) {
+            throw new ForbiddenClientException();
+        }
+        checkBaseFunction(BaseFunction.ADMIN);
+        
+        // Validate the input data
+        action = ValidationUtil.validateLength(action, "action", 1, 20);
+        comment = ValidationUtil.validateLength(comment, "comment", 0, 1000, true);
+        
+        // Get the request
+        RegistrationRequestDao requestDao = new RegistrationRequestDao();
+        RegistrationRequest request = requestDao.getById(id);
+        if (request == null) {
+            throw new ClientException("RequestNotFound", "The registration request does not exist");
+        }
+        
+        if ("approve".equals(action)) {
+            // Create the user
+            User user = new User();
+            user.setRoleId(Constants.DEFAULT_USER_ROLE);
+            user.setUsername(request.getUsername());
+            user.setPassword(request.getPassword());
+            user.setEmail(request.getEmail());
+            user.setStorageQuota(ConfigUtil.getConfigLongValue(ConfigType.DEFAULT_STORAGE_QUOTA));
+            user.setOnboarding(true);
+            
+            try {
+                UserDao userDao = new UserDao();
+                userDao.create(user, principal.getId());
+            } catch (Exception e) {
+                throw new ServerException("UnknownError", "Error creating user", e);
+            }
+            
+            // Update request status
+            request.setStatus("APPROVED");
+            request.setProcessedBy(principal.getId());
+            request.setProcessDate(new Date());
+            request.setComment(comment);
+            requestDao.update(request);
+        } else if ("reject".equals(action)) {
+            // Update request status
+            request.setStatus("REJECTED");
+            request.setProcessedBy(principal.getId());
+            request.setProcessDate(new Date());
+            request.setComment(comment);
+            requestDao.update(request);
+        } else {
+            throw new ClientException("ValidationError", "Invalid action");
+        }
+        
+        // Always return OK
+        JsonObjectBuilder response = Json.createObjectBuilder()
+                .add("status", "ok");
+        return Response.ok().entity(response.build()).build();
+    }
+
+    /**
      * Creates a new user.
      *
      * @api {put} /user Register a new user
