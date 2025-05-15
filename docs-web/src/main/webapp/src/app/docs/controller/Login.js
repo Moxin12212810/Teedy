@@ -57,31 +57,32 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
 
   // Submit registration request
   $scope.submitRegistrationRequest = function() {
-    Restangular.one('registration').post('request', $scope.registration).then(function() {
-      var title = $translate.instant('login.registration_request_sent_title');
-      var msg = $translate.instant('login.registration_request_sent_message');
-      var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
-      $dialog.messageBox(title, msg, btns).then(function() {
-        $scope.showRegistrationForm = false;
-        $scope.registration = {
-          username: '',
-          email: '',
-          password: ''
-        };
+    Restangular.one('user').customPOST($.param($scope.registration), 'register', {}, {'Content-Type': 'application/x-www-form-urlencoded'})
+      .then(function() {
+        var title = $translate.instant('login.registration_request_sent_title');
+        var msg = $translate.instant('login.registration_request_sent_message');
+        var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+        $dialog.messageBox(title, msg, btns).then(function() {
+          $scope.showRegistrationForm = false;
+          $scope.registration = {
+            username: '',
+            email: '',
+            password: ''
+          };
+        });
+      }, function(data) {
+        var title = $translate.instant('login.registration_request_error_title');
+        var msg = $translate.instant('login.registration_request_error_message');
+        if (data.data.type === 'AlreadyExistingUsername') {
+          msg = $translate.instant('login.registration_request_error_username_exists');
+        } else if (data.data.type === 'AlreadyExistingEmail') {
+          msg = $translate.instant('login.registration_request_error_email_exists');
+        } else if (data.data.type === 'AlreadyExistingRequest') {
+          msg = $translate.instant('login.registration_request_error_request_exists');
+        }
+        var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+        $dialog.messageBox(title, msg, btns);
       });
-    }, function(data) {
-      var title = $translate.instant('login.registration_request_error_title');
-      var msg = $translate.instant('login.registration_request_error_message');
-      if (data.data.type === 'AlreadyExistingUsername') {
-        msg = $translate.instant('login.registration_request_error_username_exists');
-      } else if (data.data.type === 'AlreadyExistingEmail') {
-        msg = $translate.instant('login.registration_request_error_email_exists');
-      } else if (data.data.type === 'AlreadyExistingRequest') {
-        msg = $translate.instant('login.registration_request_error_request_exists');
-      }
-      var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
-      $dialog.messageBox(title, msg, btns);
-    });
   };
 
   // Password lost
