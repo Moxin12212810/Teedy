@@ -14,7 +14,18 @@
     "password_lost_sent_title": "密码重置邮件已发送",
     "password_lost_sent_message": "重置密码的邮件已经发送至<strong>{{ username }}</strong>",
     "password_lost_error_title": "密码重置出错",
-    "password_lost_error_message": "无法发送密码重置邮件，请联系您的管理员进行手动重置"
+    "password_lost_error_message": "无法发送密码重置邮件，请联系您的管理员进行手动重置",
+    "request_registration": "申请注册",
+    "registration_request": "注册申请",
+    "email": "电子邮箱",
+    "submit_request": "提交申请",
+    "registration_request_sent_title": "注册申请已提交",
+    "registration_request_sent_message": "您的注册申请已提交，请等待管理员审核",
+    "registration_request_error_title": "注册申请失败",
+    "registration_request_error_message": "注册申请提交失败",
+    "registration_request_error_username_exists": "用户名已存在",
+    "registration_request_error_email_exists": "电子邮箱已被使用",
+    "registration_request_error_request_exists": "该用户名的注册申请已存在"
   },
   "passwordlost": {
     "title": "丢失密码",
