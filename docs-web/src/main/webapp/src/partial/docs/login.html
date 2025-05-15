@@ -31,7 +31,7 @@
       <div class="col-lg-offset-4 col-lg-4 col-xs-offset-1 col-xs-10">
         <img src="img/title.png" class="img-responsive" />
 
-        <form>
+        <form ng-if="!showRegistrationForm">
           <div class="form-group">
             <label class="sr-only" for="inputUsername">{{ 'login.username' | translate }}</label>
             <input class="form-control" type="text" id="inputUsername" name="username"
@@ -76,44 +76,41 @@
             </div>
           </div>
 
-          <!-- 注册请求表单 -->
-          <div class="registration-form" ng-if="showRegistrationForm">
-            <h3>{{ 'login.registration_request' | translate }}</h3>
-            <form name="registrationForm" novalidate>
-              <div class="form-group">
-                <label for="reg-username">{{ 'login.username' | translate }}</label>
-                <input class="form-control" type="text" id="reg-username" name="regUsername"
-                       ng-model="registration.username" required />
-              </div>
-
-              <div class="form-group">
-                <label for="reg-email">{{ 'login.email' | translate }}</label>
-                <input class="form-control" type="email" id="reg-email" name="regEmail"
-                       ng-model="registration.email" required />
-              </div>
-
-              <div class="form-group">
-                <label for="reg-password">{{ 'login.password' | translate }}</label>
-                <input class="form-control" type="password" id="reg-password" name="regPassword"
-                       ng-model="registration.password" required />
-              </div>
-
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary" ng-click="submitRegistrationRequest()" ng-disabled="!registrationForm.$valid">
-                  <span class="fas fa-user-plus"></span> {{ 'login.submit_request' | translate }}
-                </button>
-                <button type="button" class="btn btn-default" ng-click="showRegistrationForm = false">
-                  {{ 'cancel' | translate }}
-                </button>
-              </div>
-            </form>
-          </div>
-
           <p class="text-center" ng-if="app.guest_login">&nbsp;</p>
 
           <button type="submit" class="btn btn-default btn-block" ng-if="app.guest_login" ng-click="loginAsGuest()">
             <span class="fas fa-user"></span> {{ 'login.login_as_guest' | translate }}
           </button>
+        </form>
+
+        <!-- 注册表单互斥显示 -->
+        <form name="registrationForm" novalidate ng-if="showRegistrationForm">
+          <h3>{{ 'login.registration_request' | translate }}</h3>
+          <div class="form-group">
+            <label for="reg-username">{{ 'login.username' | translate }}</label>
+            <input class="form-control" type="text" id="reg-username" name="regUsername"
+                   ng-model="registration.username" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">{{ 'login.email' | translate }}</label>
+            <input class="form-control" type="email" id="reg-email" name="regEmail"
+                   ng-model="registration.email" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">{{ 'login.password' | translate }}</label>
+            <input class="form-control" type="password" id="reg-password" name="regPassword"
+                   ng-model="registration.password" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary"
+                    ng-click="submitRegistrationRequest()"
+                    ng-disabled="registrationForm.$invalid">
+              <span class="fas fa-user-plus"></span> {{ 'login.submit_request' | translate }}
+            </button>
+            <button type="button" class="btn btn-default" ng-click="showRegistrationForm = false">
+              {{ 'cancel' | translate }}
+            </button>
+          </div>
         </form>
       </div>
     </div>
