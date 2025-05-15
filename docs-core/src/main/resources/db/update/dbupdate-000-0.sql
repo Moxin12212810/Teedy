@@ -13,18 +13,7 @@ create cached table T_DOCUMENT_TAG ( DOT_ID_C varchar(36) not null, DOT_IDDOCUME
 create cached table T_ACL ( ACL_ID_C varchar(36) not null, ACL_PERM_C varchar(30) not null, ACL_SOURCEID_C varchar(36) not null, ACL_TARGETID_C varchar(36) not null, ACL_DELETEDATE_D datetime, primary key (ACL_ID_C) );
 create cached table T_SHARE ( SHA_ID_C varchar(36) not null, SHA_NAME_C varchar(36), SHA_CREATEDATE_D datetime, SHA_DELETEDATE_D datetime, primary key (SHA_ID_C) );
 create cached table T_AUDIT_LOG ( LOG_ID_C varchar(36) not null, LOG_IDENTITY_C varchar(36) not null, LOG_CLASSENTITY_C varchar(50) not null, LOG_TYPE_C varchar(50) not null, LOG_MESSAGE_C varchar(1000), LOG_CREATEDATE_D datetime, primary key (LOG_ID_C) );
-create cached table T_REGISTRATION_REQUEST (
-    RRE_ID_C varchar(36) not null,
-    RRE_EMAIL_C varchar(255) not null,
-    RRE_USERNAME_C varchar(50) not null,
-    RRE_PASSWORD_C varchar(255) not null,
-    RRE_STATUS_C varchar(20) not null default 'PENDING',
-    RRE_CREATEDATE_D datetime not null,
-    RRE_UPDATEDATE_D datetime not null,
-    RRE_REASON_C varchar(1000),
-    primary key (RRE_ID_C)
-);
-
+CREATE TABLE T_REGISTRATION_REQUEST (REQ_ID_C VARCHAR(36) PRIMARY KEY, REQ_USERNAME_C VARCHAR(50) NOT NULL, REQ_PASSWORD_C VARCHAR(100) NOT NULL, REQ_EMAIL_C VARCHAR(100) NOT NULL, REQ_CREATEDATE_D TIMESTAMP NOT NULL, REQ_STATUS_C VARCHAR(20) NOT NULL, REQ_PROCESSEDBY_C VARCHAR(36), REQ_PROCESSDATE_D TIMESTAMP, REQ_COMMENT_C VARCHAR(1000));
 alter table T_AUTHENTICATION_TOKEN add constraint FK_AUT_IDUSER_C foreign key (AUT_IDUSER_C) references T_USER (USE_ID_C) on delete restrict on update restrict;
 alter table T_DOCUMENT add constraint FK_DOC_IDUSER_C foreign key (DOC_IDUSER_C) references T_USER (USE_ID_C) on delete restrict on update restrict;
 alter table T_FILE add constraint FK_FIL_IDDOC_C foreign key (FIL_IDDOC_C) references T_DOCUMENT (DOC_ID_C) on delete restrict on update restrict;
