@@ -35,13 +35,13 @@
           <div class="form-group">
             <label class="sr-only" for="inputUsername">{{ 'login.username' | translate }}</label>
             <input class="form-control" type="text" id="inputUsername" name="username"
-                   ng-attr-placeholder="{{ 'login.username' | translate }}" ng-model="user.username" />
+              ng-attr-placeholder="{{ 'login.username' | translate }}" ng-model="user.username" />
           </div>
 
           <div class="form-group">
             <label class="sr-only" for="inputPassword">{{ 'login.password' | translate }}</label>
             <input class="form-control" type="password" id="inputPassword" name="password"
-                   ng-attr-placeholder="{{ 'login.password' | translate }}" ng-model="user.password" />
+              ng-attr-placeholder="{{ 'login.password' | translate }}" ng-model="user.password" />
           </div>
 
           <span class="help-block" ng-if="codeRequired">
@@ -51,7 +51,7 @@
           <div class="form-group" ng-if="codeRequired">
             <label class="sr-only" for="inputCode">{{ 'login.validation_code' | translate }}</label>
             <input class="form-control" type="text" id="inputCode" name="code"
-                   ng-attr-placeholder="{{ 'login.validation_code' | translate }}" ng-model="user.code" />
+              ng-attr-placeholder="{{ 'login.validation_code' | translate }}" ng-model="user.code" />
           </div>
 
           <div class="checkbox text-muted">
@@ -71,7 +71,8 @@
               <div class="well-sm">
                 <a href ng-click="openPasswordLost()">{{ 'login.password_lost_btn' | translate }}</a>
                 <br>
-                <button type="button" class="btn btn-link" ng-click="$parent.showRegistrationForm = true">{{ 'login.request_registration' | translate }}</button>
+                <button type="button" class="btn btn-link" ng-click="$parent.showRegistrationForm = true">{{
+                  'login.request_registration' | translate }}</button>
               </div>
             </div>
           </div>
@@ -89,22 +90,21 @@
           <div class="form-group">
             <label for="reg-username">{{ 'login.username' | translate }}</label>
             <input class="form-control" type="text" id="reg-username" name="regUsername"
-                   ng-model="registration.username" required />
+              ng-model="registration.username" required />
           </div>
           <div class="form-group">
             <label for="reg-email">{{ 'login.email' | translate }}</label>
-            <input class="form-control" type="email" id="reg-email" name="regEmail"
-                   ng-model="registration.email" required />
+            <input class="form-control" type="email" id="reg-email" name="regEmail" ng-model="registration.email"
+              required />
           </div>
           <div class="form-group">
             <label for="reg-password">{{ 'login.password' | translate }}</label>
             <input class="form-control" type="password" id="reg-password" name="regPassword"
-                   ng-model="registration.password" required />
+              ng-model="registration.password" required />
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary"
-                    ng-click="submitRegistrationRequest()"
-                    ng-disabled="$parent.registrationForm.$invalid">
+            <button type="submit" class="btn btn-primary" ng-click="submitRegistrationRequest()"
+              ng-disabled="$parent.registrationForm.$invalid">
               <span class="fas fa-user-plus"></span> {{ 'login.submit_request' | translate }}
             </button>
             <button type="button" class="btn btn-default" ng-click="$parent.showRegistrationForm = false">

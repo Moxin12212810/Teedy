@@ -479,7 +479,9 @@ public class UserResource extends BaseResource {
         // Validate the input data
         username = StringUtils.strip(username);
         password = StringUtils.strip(password);
-
+        // System.out.println("UserResource username: " + username);
+        // System.out.println("UserResource password: " + password);
+        
         // Get the user
         UserDao userDao = new UserDao();
         User user = null;

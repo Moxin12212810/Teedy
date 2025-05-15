@@ -38,6 +38,7 @@ create index IDX_RRE_STATUS on T_REGISTRATION_REQUEST(RRE_STATUS_C);
 
 insert into T_CONFIG(CFG_ID_C, CFG_VALUE_C) values('DB_VERSION', '0');
 insert into T_CONFIG(CFG_ID_C, CFG_VALUE_C) values('LUCENE_DIRECTORY_STORAGE', 'FILE');
+insert into T_CONFIG(CFG_ID_C, CFG_VALUE_C) values('DEFAULT_STORAGE_QUOTA', '10000000000');
 insert into T_BASE_FUNCTION(BAF_ID_C) values('ADMIN');
 insert into T_LOCALE(LOC_ID_C) values('en');
 insert into T_LOCALE(LOC_ID_C) values('fr');

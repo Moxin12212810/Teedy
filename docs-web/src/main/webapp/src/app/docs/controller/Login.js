@@ -3,9 +3,18 @@
 /**
  * Login controller.
  */
-angular.module('docs').controller('Login', function(Restangular, $scope, $rootScope, $state, $stateParams, $dialog, User, $translate, $uibModal) {
+angular.module('docs').controller('Login', function (Restangular, $scope, $rootScope, $state, $stateParams, $dialog, User, $translate, $uibModal) {
   $scope.codeRequired = false;
   $scope.showRegistrationForm = false;
+
+  // Initialize the user object
+  $scope.user = {
+    username: '',
+    password: '',
+    code: '',
+    remember: false
+  };
+
   $scope.registration = {
     username: '',
     email: '',
@@ -13,35 +22,36 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
   };
 
   // Get the app configuration
-  Restangular.one('app').get().then(function(data) {
+  Restangular.one('app').get().then(function (data) {
     $rootScope.app = data;
   });
 
   // Login as guest
-  $scope.loginAsGuest = function() {
+  $scope.loginAsGuest = function () {
     $scope.user = {
       username: 'guest',
       password: ''
     };
     $scope.login();
   };
-  
+
   // Login
-  $scope.login = function() {
-    User.login($scope.user).then(function() {
-      User.userInfo(true).then(function(data) {
+  $scope.login = function () {
+    // console.log('Login attempt with:', $scope.user);
+    User.login($scope.user).then(function () {
+      User.userInfo(true).then(function (data) {
         $rootScope.userInfo = data;
       });
 
-      if($stateParams.redirectState !== undefined && $stateParams.redirectParams !== undefined) {
+      if ($stateParams.redirectState !== undefined && $stateParams.redirectParams !== undefined) {
         $state.go($stateParams.redirectState, JSON.parse($stateParams.redirectParams))
-          .catch(function() {
+          .catch(function () {
             $state.go('document.default');
           });
       } else {
         $state.go('document.default');
       }
-    }, function(data) {
+    }, function (data) {
       if (data.data.type === 'ValidationCodeRequired') {
         // A TOTP validation code is required to login
         $scope.codeRequired = true;
@@ -49,20 +59,20 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
         // Login truly failed
         var title = $translate.instant('login.login_failed_title');
         var msg = $translate.instant('login.login_failed_message');
-        var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+        var btns = [{ result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary' }];
         $dialog.messageBox(title, msg, btns);
       }
     });
   };
 
   // Submit registration request
-  $scope.submitRegistrationRequest = function() {
-    Restangular.one('user').customPOST($.param($scope.registration), 'register', {}, {'Content-Type': 'application/x-www-form-urlencoded'})
-      .then(function() {
+  $scope.submitRegistrationRequest = function () {
+    Restangular.one('user').customPOST($.param($scope.registration), 'register', {}, { 'Content-Type': 'application/x-www-form-urlencoded' })
+      .then(function () {
         var title = $translate.instant('login.registration_request_sent_title');
         var msg = $translate.instant('login.registration_request_sent_message');
-        var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
-        $dialog.messageBox(title, msg, btns).then(function() {
+        var btns = [{ result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary' }];
+        $dialog.messageBox(title, msg, btns).then(function () {
           $scope.showRegistrationForm = false;
           $scope.registration = {
             username: '',
@@ -70,7 +80,7 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
             password: ''
           };
         });
-      }, function(data) {
+      }, function (data) {
         var title = $translate.instant('login.registration_request_error_title');
         var msg = $translate.instant('login.registration_request_error_message');
         if (data.data.type === 'AlreadyExistingUsername') {
@@ -80,7 +90,7 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
         } else if (data.data.type === 'AlreadyExistingRequest') {
           msg = $translate.instant('login.registration_request_error_request_exists');
         }
-        var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+        var btns = [{ result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary' }];
         $dialog.messageBox(title, msg, btns);
       });
   };
@@ -101,12 +111,12 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
       }).then(function () {
         var title = $translate.instant('login.password_lost_sent_title');
         var msg = $translate.instant('login.password_lost_sent_message', { username: username });
-        var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+        var btns = [{ result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary' }];
         $dialog.messageBox(title, msg, btns);
       }, function () {
         var title = $translate.instant('login.password_lost_error_title');
         var msg = $translate.instant('login.password_lost_error_message');
-        var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+        var btns = [{ result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary' }];
         $dialog.messageBox(title, msg, btns);
       });
     });

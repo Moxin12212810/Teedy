@@ -518,5 +518,18 @@
   "loading": "加载中...",
   "send": "发送",
   "enabled": "激活",
-  "disabled": "未激活"
+  "disabled": "未激活",
+  "registration_requests": {
+    "title": "注册申请管理",
+    "no_requests": "暂无待处理的注册申请",
+    "username": "用户名",
+    "email": "电子邮箱",
+    "create_date": "申请时间",
+    "actions": "操作",
+    "approve": "批准",
+    "reject": "拒绝",
+    "comment": "处理意见",
+    "confirm_title": "确认处理",
+    "confirm_message": "您确定要处理这个注册申请吗？"
+  }
 }

@@ -1,3 +1,61 @@
-2025-05-16 00:41:46 jdbc[3]: exception
+2025-05-16 03:34:57 database: flush
+org.h2.message.DbException: General error: "java.lang.IllegalStateException: Could not truncate file nio:/mnt/f/Software_Engineering/Teedy/data/docs.mv.db to size 933888 [1.4.199/2]" [50000-199]
+	at org.h2.message.DbException.get(DbException.java:194)
+	at org.h2.message.DbException.convert(DbException.java:347)
+	at org.h2.mvstore.db.MVTableEngine$1.uncaughtException(MVTableEngine.java:90)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:2787)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:441)
+	at org.h2.mvstore.MVStore.store(MVStore.java:1192)
+	at org.h2.mvstore.MVStore.commit(MVStore.java:1166)
+	at org.h2.mvstore.MVStore.compactRewrite(MVStore.java:2169)
+	at org.h2.mvstore.MVStore.compact(MVStore.java:2041)
+	at org.h2.mvstore.db.MVTableEngine$Store.compactFile(MVTableEngine.java:360)
+	at org.h2.engine.Database.closeOpenFilesAndUnlock(Database.java:1604)
+	at org.h2.engine.Database.closeImpl(Database.java:1509)
+	at org.h2.engine.Database.close(Database.java:1417)
+	at org.h2.engine.OnExitDatabaseCloser.onShutdown(OnExitDatabaseCloser.java:85)
+	at org.h2.engine.OnExitDatabaseCloser.run(OnExitDatabaseCloser.java:114)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: General error: "java.lang.IllegalStateException: Could not truncate file nio:/mnt/f/Software_Engineering/Teedy/data/docs.mv.db to size 933888 [1.4.199/2]" [50000-199]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:502)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:427)
+	... 15 more
+Caused by: java.lang.IllegalStateException: Could not truncate file nio:/mnt/f/Software_Engineering/Teedy/data/docs.mv.db to size 933888 [1.4.199/2]
+	at org.h2.mvstore.DataUtils.newIllegalStateException(DataUtils.java:883)
+	at org.h2.mvstore.FileStore.truncate(FileStore.java:245)
+	at org.h2.mvstore.MVStore.shrinkFileIfPossible(MVStore.java:1756)
+	at org.h2.mvstore.MVStore.storeNow(MVStore.java:1376)
+	at org.h2.mvstore.MVStore.store(MVStore.java:1190)
+	... 9 more
+Caused by: java.io.IOException: No such file or directory
+	at java.base/sun.nio.ch.FileDispatcherImpl.truncate0(Native Method)
+	at java.base/sun.nio.ch.FileDispatcherImpl.truncate(FileDispatcherImpl.java:86)
+	at java.base/sun.nio.ch.FileChannelImpl.truncate(FileChannelImpl.java:437)
+	at org.h2.store.fs.FileNio.truncate(FilePathNio.java:87)
+	at org.h2.mvstore.FileStore.truncate(FileStore.java:240)
+	... 12 more
+2025-05-16 03:34:57 database: compactFile
+java.lang.IllegalStateException: Could not truncate file nio:/mnt/f/Software_Engineering/Teedy/data/docs.mv.db to size 933888 [1.4.199/2]
+	at org.h2.mvstore.DataUtils.newIllegalStateException(DataUtils.java:883)
+	at org.h2.mvstore.FileStore.truncate(FileStore.java:245)
+	at org.h2.mvstore.MVStore.shrinkFileIfPossible(MVStore.java:1756)
+	at org.h2.mvstore.MVStore.storeNow(MVStore.java:1376)
+	at org.h2.mvstore.MVStore.store(MVStore.java:1190)
+	at org.h2.mvstore.MVStore.commit(MVStore.java:1166)
+	at org.h2.mvstore.MVStore.compactRewrite(MVStore.java:2169)
+	at org.h2.mvstore.MVStore.compact(MVStore.java:2041)
+	at org.h2.mvstore.db.MVTableEngine$Store.compactFile(MVTableEngine.java:360)
+	at org.h2.engine.Database.closeOpenFilesAndUnlock(Database.java:1604)
+	at org.h2.engine.Database.closeImpl(Database.java:1509)
+	at org.h2.engine.Database.close(Database.java:1417)
+	at org.h2.engine.OnExitDatabaseCloser.onShutdown(OnExitDatabaseCloser.java:85)
+	at org.h2.engine.OnExitDatabaseCloser.run(OnExitDatabaseCloser.java:114)
+Caused by: java.io.IOException: No such file or directory
+	at java.base/sun.nio.ch.FileDispatcherImpl.truncate0(Native Method)
+	at java.base/sun.nio.ch.FileDispatcherImpl.truncate(FileDispatcherImpl.java:86)
+	at java.base/sun.nio.ch.FileChannelImpl.truncate(FileChannelImpl.java:437)
+	at org.h2.store.fs.FileNio.truncate(FilePathNio.java:87)
+	at org.h2.mvstore.FileStore.truncate(FileStore.java:240)
+	... 12 more
+2025-05-16 03:35:50 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "T_CONFIG" not found; SQL statement:
 select c.CFG_VALUE_C from T_CONFIG c where c.CFG_ID_C='DB_VERSION' [42102-199]
