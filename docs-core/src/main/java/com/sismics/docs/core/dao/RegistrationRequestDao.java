@@ -21,37 +21,38 @@ public class RegistrationRequestDao {
      */
     public String create(RegistrationRequest request) {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
-        
+
         // Check if username already exists
         Query q = em.createQuery("select u from User u where u.username = :username and u.deleteDate is null");
         q.setParameter("username", request.getUsername());
         if (!q.getResultList().isEmpty()) {
             throw new RuntimeException("AlreadyExistingUsername");
         }
-        
+
         // Check if email already exists
         q = em.createQuery("select u from User u where u.email = :email and u.deleteDate is null");
         q.setParameter("email", request.getEmail());
         if (!q.getResultList().isEmpty()) {
             throw new RuntimeException("AlreadyExistingEmail");
         }
-        
+
         // Check if there's already a pending request for this username
         q = em.createQuery("select r from RegistrationRequest r where r.username = :username and r.status = 'PENDING'");
         q.setParameter("username", request.getUsername());
         if (!q.getResultList().isEmpty()) {
             throw new RuntimeException("AlreadyExistingRequest");
         }
-        
+
         // Create the request
         request.setId(UUID.randomUUID().toString());
         request.setCreateDate(new Date());
+        request.setUpdateDate(new Date());
         request.setStatus("PENDING");
         em.persist(request);
-        
+
         return request.getId();
     }
-    
+
     /**
      * Gets a registration request by ID.
      *
@@ -62,7 +63,7 @@ public class RegistrationRequestDao {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
         return em.find(RegistrationRequest.class, id);
     }
-    
+
     /**
      * Gets all pending registration requests.
      *
@@ -71,10 +72,11 @@ public class RegistrationRequestDao {
     @SuppressWarnings("unchecked")
     public List<RegistrationRequest> getPendingRequests() {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
-        Query q = em.createQuery("select r from RegistrationRequest r where r.status = 'PENDING' order by r.createDate");
+        Query q = em
+                .createQuery("select r from RegistrationRequest r where r.status = 'PENDING' order by r.createDate");
         return q.getResultList();
     }
-    
+
     /**
      * Updates a registration request.
      *
