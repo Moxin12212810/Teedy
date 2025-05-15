@@ -60,6 +60,25 @@ public class RegistrationRequest {
     @Column(name = "RRE_REASON_C", length = 1000)
     private String reason;
 
+    /**
+     * Processed by user ID.
+     */
+    @Column(name = "RRE_PROCESSEDBY_C", length = 36)
+    private String processedBy;
+
+    /**
+     * Process date.
+     */
+    @Column(name = "RRE_PROCESSDATE_D")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date processDate;
+
+    /**
+     * Comment.
+     */
+    @Column(name = "RRE_COMMENT_C", length = 1000)
+    private String comment;
+
     public String getId() {
         return id;
     }
@@ -122,5 +141,29 @@ public class RegistrationRequest {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getProcessedBy() {
+        return processedBy;
+    }
+
+    public void setProcessedBy(String processedBy) {
+        this.processedBy = processedBy;
+    }
+
+    public Date getProcessDate() {
+        return processDate;
+    }
+
+    public void setProcessDate(Date processDate) {
+        this.processDate = processDate;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

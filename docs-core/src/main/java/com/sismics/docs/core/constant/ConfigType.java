@@ -31,6 +31,11 @@ public enum ConfigType {
     DEFAULT_LANGUAGE,
 
     /**
+     * Default storage quota.
+     */
+    DEFAULT_STORAGE_QUOTA,
+
+    /**
      * SMTP server configuration.
      */
     SMTP_HOSTNAME,
