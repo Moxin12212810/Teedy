@@ -70,8 +70,43 @@
             <div class="col-md-6 text-right btn-password-lost">
               <div class="well-sm">
                 <a href ng-click="openPasswordLost()">{{ 'login.password_lost_btn' | translate }}</a>
+                <br>
+                <a href ng-click="showRegistrationForm = true">{{ 'login.request_registration' | translate }}</a>
               </div>
             </div>
+          </div>
+
+          <!-- 注册请求表单 -->
+          <div class="registration-form" ng-if="showRegistrationForm">
+            <h3>{{ 'login.registration_request' | translate }}</h3>
+            <form name="registrationForm" novalidate>
+              <div class="form-group">
+                <label for="reg-username">{{ 'login.username' | translate }}</label>
+                <input class="form-control" type="text" id="reg-username" name="regUsername"
+                       ng-model="registration.username" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg-email">{{ 'login.email' | translate }}</label>
+                <input class="form-control" type="email" id="reg-email" name="regEmail"
+                       ng-model="registration.email" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg-password">{{ 'login.password' | translate }}</label>
+                <input class="form-control" type="password" id="reg-password" name="regPassword"
+                       ng-model="registration.password" required />
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" ng-click="submitRegistrationRequest()" ng-disabled="!registrationForm.$valid">
+                  <span class="fas fa-user-plus"></span> {{ 'login.submit_request' | translate }}
+                </button>
+                <button type="button" class="btn btn-default" ng-click="showRegistrationForm = false">
+                  {{ 'cancel' | translate }}
+                </button>
+              </div>
+            </form>
           </div>
 
           <p class="text-center" ng-if="app.guest_login">&nbsp;</p>
