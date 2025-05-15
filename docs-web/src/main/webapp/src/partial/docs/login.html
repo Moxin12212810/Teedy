@@ -104,10 +104,10 @@
           <div class="form-actions">
             <button type="submit" class="btn btn-primary"
                     ng-click="submitRegistrationRequest()"
-                    ng-disabled="registrationForm.$invalid">
+                    ng-disabled="$parent.registrationForm.$invalid">
               <span class="fas fa-user-plus"></span> {{ 'login.submit_request' | translate }}
             </button>
-            <button type="button" class="btn btn-default" ng-click="showRegistrationForm = false">
+            <button type="button" class="btn btn-default" ng-click="$parent.showRegistrationForm = false">
               {{ 'cancel' | translate }}
             </button>
           </div>
