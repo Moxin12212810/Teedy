@@ -49,6 +49,30 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
     });
   };
 
+  // Register
+  $scope.register = function() {
+    Restangular.one('user').post('register', $scope.user).then(function() {
+      var title = $translate.instant('register.success_title');
+      var msg = $translate.instant('register.success_message');
+      var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+      $dialog.messageBox(title, msg, btns).then(function() {
+        $state.go('login');
+      });
+    }, function(data) {
+      var title = $translate.instant('register.error_title');
+      var msg = $translate.instant('register.error_message');
+      if (data.data.type === 'AlreadyExistingUsername') {
+        msg = $translate.instant('register.error_username_exists');
+      } else if (data.data.type === 'AlreadyExistingEmail') {
+        msg = $translate.instant('register.error_email_exists');
+      } else if (data.data.type === 'AlreadyExistingRequest') {
+        msg = $translate.instant('register.error_request_exists');
+      }
+      var btns = [{result: 'ok', label: $translate.instant('ok'), cssClass: 'btn-primary'}];
+      $dialog.messageBox(title, msg, btns);
+    });
+  };
+
   // Password lost
   $scope.openPasswordLost = function () {
     $uibModal.open({
