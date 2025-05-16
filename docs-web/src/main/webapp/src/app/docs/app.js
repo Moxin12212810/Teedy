@@ -74,6 +74,16 @@ angular.module('docs',
           }
         }
       })
+      // 添加聊天路由
+      .state('chat', {
+        url: '/chat',
+        views: {
+          'page': {
+            templateUrl: 'partial/docs/chat.html',
+            controller: 'Chat'
+          }
+        }
+      })
       .state('settings.default', {
         url: '',
         views: {
