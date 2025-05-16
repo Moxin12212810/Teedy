@@ -3,12 +3,26 @@
 /**
  * Chat controller.
  */
-angular.module('docs').controller('Chat', function ($scope, Chat, Restangular) {
-    $scope.messages = Chat.messages;
+angular.module('docs').controller('Chat', function ($scope, $timeout, Chat, Restangular) {
+    // 使用对象来存储消息，以便更好的双向绑定
+    $scope.chatData = {
+        messages: Chat.messages
+    };
     $scope.currentChat = null;
     $scope.message = '';
     $scope.currentUser = null;
     $scope.users = [];
+
+    // 监听消息数组的变化
+    $scope.$watch('chatData.messages', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+            console.log('消息数组已更新:', newVal);
+            // 强制更新视图
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+        }
+    }, true);
 
     // 获取当前用户信息
     Restangular.one('user').get().then(function (data) {
@@ -40,13 +54,19 @@ angular.module('docs').controller('Chat', function ($scope, Chat, Restangular) {
         // 加载与该用户的历史消息
         Chat.loadMessages(user.username).then(function () {
             console.log('加载历史消息:', Chat.messages);
+            // 更新本地消息数组
+            $scope.chatData.messages = Chat.messages;
             // 标记所有收到的消息为已读
-            $scope.messages.forEach(function (msg) {
+            $scope.chatData.messages.forEach(function (msg) {
                 if (msg.from === user.username && msg.status === 'RECEIVED') {
                     Chat.markAsRead(msg.id);
                     msg.status = 'READ';
                 }
             });
+            // 强制更新视图
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         });
     };
 
@@ -77,6 +97,13 @@ angular.module('docs').controller('Chat', function ($scope, Chat, Restangular) {
                 if (!success) {
                     console.error('发送失败，恢复消息文本');
                     $scope.message = messageText;
+                } else {
+                    // 确保消息显示在界面上
+                    $timeout(function () {
+                        if (!$scope.$$phase) {
+                            $scope.$apply();
+                        }
+                    });
                 }
             })
             .catch(function (error) {

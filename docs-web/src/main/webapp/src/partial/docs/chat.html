@@ -21,7 +21,7 @@
                 <h3 class="panel-title">与 {{ currentChat.username }} 聊天中</h3>
             </div>
             <div class="panel-body chat-messages">
-                <div class="message" ng-repeat="message in messages | orderBy:'timestamp'">
+                <div class="message" ng-repeat="message in chatData.messages | orderBy:'timestamp'">
                     <div ng-class="{'text-right': message.from === 'me'}">
                         <strong>{{ message.from === 'me' ? '我' : message.from }}</strong>
                         <span class="text-muted">{{ message.timestamp | date:'HH:mm:ss' }}</span>
