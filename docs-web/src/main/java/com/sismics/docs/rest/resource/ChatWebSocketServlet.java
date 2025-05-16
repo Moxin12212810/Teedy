@@ -15,6 +15,7 @@ import java.io.StringReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
+import java.util.UUID;
 
 @ServerEndpoint("/ws/chat/{username}")
 public class ChatWebSocketServlet {
@@ -57,10 +58,19 @@ public class ChatWebSocketServlet {
                 JsonObject jsonMessage = jsonReader.readObject();
                 jsonReader.close();
 
+                // 添加空值检查
+                if (!jsonMessage.containsKey("to") || !jsonMessage.containsKey("content")) {
+                    log.error("消息格式错误: 缺少必需字段");
+                    return;
+                }
+
                 String toUsername = jsonMessage.getString("to");
                 String content = jsonMessage.getString("content");
-                String messageId = jsonMessage.getString("id");
-                long timestamp = jsonMessage.getJsonNumber("timestamp").longValue();
+                String messageId = jsonMessage.containsKey("id") ? jsonMessage.getString("id")
+                        : UUID.randomUUID().toString();
+                long timestamp = jsonMessage.containsKey("timestamp")
+                        ? jsonMessage.getJsonNumber("timestamp").longValue()
+                        : System.currentTimeMillis();
 
                 // 构建发送的消息
                 JsonObject outMessage = Json.createObjectBuilder()
@@ -82,6 +92,12 @@ public class ChatWebSocketServlet {
                 }
             } catch (Exception e) {
                 log.error("处理JSON消息时出错", e);
+                // 发送错误消息回客户端
+                JsonObject errorMessage = Json.createObjectBuilder()
+                        .add("error", "消息处理失败")
+                        .add("message", e.getMessage())
+                        .build();
+                session.getBasicRemote().sendText(errorMessage.toString());
             }
         } catch (Exception e) {
             log.error("消息处理过程中出错", e);

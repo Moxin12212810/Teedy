@@ -115,7 +115,8 @@ angular.module('docs').factory('Chat', function ($rootScope, Restangular) {
                         id: response.id,
                         to: to,
                         content: message,
-                        timestamp: new Date().getTime()
+                        timestamp: new Date().getTime(),
+                        from: $rootScope.userInfo.username
                     };
 
                     console.log('发送WebSocket消息:', msg);
