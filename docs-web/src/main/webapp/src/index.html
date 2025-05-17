@@ -145,7 +145,8 @@
         <li ui-sref-active="{ active: 'tag.**' }" id="navigation-tag">
           <a href="#/tag"><span class="fas fa-tags"></span> {{ 'index.nav_tags' | translate }}</a>
         </li>
-        <li ui-sref-active="{ active: 'user.**', active2: 'group.**' }">
+        <li ui-sref-active="{ active: 'user.**', active2: 'group.**' }"
+          ng-if="userInfo.base_functions.indexOf('ADMIN') !== -1">
           <a href="#/user"><span class="fas fa-user"></span> {{ 'index.nav_users_groups' | translate }}</a>
         </li>
         <!-- 添加聊天入口 -->
