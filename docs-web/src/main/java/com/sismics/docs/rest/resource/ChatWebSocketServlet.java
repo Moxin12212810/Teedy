@@ -1,6 +1,8 @@
 package com.sismics.docs.rest.resource;
 
-import com.sismics.docs.core.model.jpa.User;
+import com.sismics.docs.core.model.jpa.Message;
+import com.sismics.docs.core.dao.MessageDao;
+import com.sismics.util.context.ThreadLocalContext;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
@@ -9,6 +11,10 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.transaction.Transactional;
+import com.sismics.util.jpa.EMF;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -46,12 +52,22 @@ public class ChatWebSocketServlet {
 
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("username") String fromUsername) {
+        EntityManager em = null;
+        EntityTransaction tx = null;
+
         try {
             if ("pong".equals(message)) {
                 return;
             }
 
             log.info("收到来自 {} 的消息: {}", fromUsername, message);
+
+            // 初始化 EntityManager 和事务
+            em = EMF.get().createEntityManager();
+            ThreadLocalContext context = ThreadLocalContext.get();
+            context.setEntityManager(em);
+            tx = em.getTransaction();
+            tx.begin();
 
             try {
                 JsonReader jsonReader = Json.createReader(new StringReader(message));
@@ -71,6 +87,21 @@ public class ChatWebSocketServlet {
                 long timestamp = jsonMessage.containsKey("timestamp")
                         ? jsonMessage.getJsonNumber("timestamp").longValue()
                         : System.currentTimeMillis();
+
+                // 保存消息到数据库
+                Message dbMessage = new Message();
+                dbMessage.setId(messageId);
+                dbMessage.setFromUser(fromUsername);
+                dbMessage.setToUser(toUsername);
+                dbMessage.setContent(content);
+                dbMessage.setStatus("SENT");
+
+                MessageDao messageDao = new MessageDao();
+                String savedId = messageDao.create(dbMessage);
+                log.info("消息已保存到数据库 - ID: {}", savedId);
+
+                // 提交事务
+                tx.commit();
 
                 // 构建发送的消息
                 JsonObject outMessage = Json.createObjectBuilder()
@@ -92,6 +123,9 @@ public class ChatWebSocketServlet {
                 }
             } catch (Exception e) {
                 log.error("处理JSON消息时出错", e);
+                if (tx != null && tx.isActive()) {
+                    tx.rollback();
+                }
                 // 发送错误消息回客户端
                 JsonObject errorMessage = Json.createObjectBuilder()
                         .add("error", "消息处理失败")
@@ -101,6 +135,14 @@ public class ChatWebSocketServlet {
             }
         } catch (Exception e) {
             log.error("消息处理过程中出错", e);
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
+        } finally {
+            if (em != null) {
+                ThreadLocalContext.cleanup();
+                em.close();
+            }
         }
     }
 
@@ -111,8 +153,8 @@ public class ChatWebSocketServlet {
     }
 
     @OnError
-    public void onError(Session session, Throwable throwable) {
-        log.error("WebSocket error", throwable);
+    public void onError(Session session, Throwable error) {
+        log.error("WebSocket error", error);
     }
 
     private void startHeartbeat(Session session) {
@@ -122,6 +164,7 @@ public class ChatWebSocketServlet {
                     session.getBasicRemote().sendText("ping");
                     Thread.sleep(PING_INTERVAL);
                 } catch (Exception e) {
+                    log.error("心跳发送失败", e);
                     break;
                 }
             }
