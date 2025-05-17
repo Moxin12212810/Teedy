@@ -36,12 +36,12 @@ public class MessageResource {
         MessageDao messageDao = new MessageDao();
         List<Message> messages = messageDao.getMessages(username, withUser, limit);
 
-        log.info("查询到 {} 条消息记录", messages.size());
+        // log.info("查询到 {} 条消息记录", messages.size());
 
         JsonArrayBuilder messagesArray = Json.createArrayBuilder();
         for (Message message : messages) {
-            log.debug("处理消息 - ID: {}, From: {}, To: {}, Content: {}",
-                    message.getId(), message.getFromUser(), message.getToUser(), message.getContent());
+            // log.debug("处理消息 - ID: {}, From: {}, To: {}, Content: {}",
+            //         message.getId(), message.getFromUser(), message.getToUser(), message.getContent());
 
             JsonObjectBuilder messageObject = Json.createObjectBuilder()
                     .add("id", message.getId())
