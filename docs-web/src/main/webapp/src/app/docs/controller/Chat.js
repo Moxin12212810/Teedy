@@ -36,12 +36,44 @@ angular.module('docs').controller('Chat', function ($scope, $timeout, Chat, Rest
 
     // 获取同组用户列表
     function loadGroupUsers() {
-        Restangular.one('user/list').get().then(function (data) {
-            // 过滤掉当前用户
-            $scope.users = data.users.filter(function (user) {
-                return user.username !== $scope.currentUser;
+        // 先获取当前用户的组信息
+        Restangular.one('user').get().then(function (userData) {
+            var userGroups = userData.groups || [];
+            console.log('当前用户的组:', userGroups);
+
+            // 如果用户没有加入任何组
+            if (!userGroups || userGroups.length === 0) {
+                console.log('用户没有加入任何组');
+                $scope.users = [];
+                return;
+            }
+
+            // 获取所有组的用户列表
+            var promises = userGroups.map(function (group) {
+                return Restangular.one('user/list').get({
+                    group: group
+                });
             });
-            console.log('在线用户列表:', $scope.users);
+
+            // 等待所有请求完成
+            Promise.all(promises).then(function (results) {
+                // 使用对象来去重，key是用户名
+                var uniqueUsers = {};
+
+                // 合并所有组的用户
+                results.forEach(function (data) {
+                    data.users.forEach(function (user) {
+                        // 排除当前用户自己
+                        if (user.username !== $scope.currentUser) {
+                            uniqueUsers[user.username] = user;
+                        }
+                    });
+                });
+
+                // 转换为数组
+                $scope.users = Object.values(uniqueUsers);
+                console.log('所有同组用户列表:', $scope.users);
+            });
         });
     }
 
