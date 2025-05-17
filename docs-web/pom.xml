@@ -84,6 +84,29 @@
       <scope>provided</scope>
     </dependency>
     
+    <!-- WebSocket -->
+    <dependency>
+        <groupId>jakarta.websocket</groupId>
+        <artifactId>jakarta.websocket-api</artifactId>
+        <version>2.1.0</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-jakarta-server</artifactId>
+        <version>11.0.20</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-jetty-server</artifactId>
+        <version>11.0.20</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-servlet</artifactId>
+        <version>11.0.20</version>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.sismics.docs</groupId>
@@ -186,8 +209,10 @@
               </systemProperties>
               <webApp>
                 <contextPath>/docs-web</contextPath>
-                <overrideDescriptor>${project.basedir}/src/dev/main/webapp/web-override.xml</overrideDescriptor>
               </webApp>
+              <modules>
+                <module>websocket</module>
+              </modules>
             </configuration>
           </plugin>
           

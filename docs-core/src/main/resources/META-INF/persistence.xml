@@ -5,5 +5,16 @@
              version="3.0">
   <persistence-unit name="transactions-optional" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    
+    <!-- Entity classes -->
+    <class>com.sismics.docs.core.model.jpa.Config</class>
+    <class>com.sismics.docs.core.model.jpa.Message</class>
+    
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.use_sql_comments" value="true"/>
+    </properties>
   </persistence-unit>
 </persistence>
